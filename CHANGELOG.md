@@ -14,7 +14,7 @@ First public release.
 - Pattern-based secret redaction on every imported candidate, with redaction, skip and privacy-fence counts in each proposal.
 - A signed local store. Facts are signed with Ed25519 when the `cryptography` package is installed and with HMAC-SHA256 from the standard library otherwise. Proposals are bound to the store, its signing key and its current generation, so a stale proposal can't be applied.
 - An opt-in recall hook on `UserPromptSubmit`. When the classifier finds a question about earlier work, it verifies every signature in the store, ranks current facts with BM25, and returns up to 800 tokens to Claude as untrusted reference context.
-- `correct`, `forget` and `recover`. A correction supersedes the old record without rewriting it, forgetting removes one record and leaves a signed revocation that blocks reimporting the same content and kind, and a signed journal lets `recover` finish an interrupted change.
+- `correct`, `forget` and `recover`. A correction supersedes the old record without touching its signed content, forgetting removes one record and leaves a signed revocation so applying the same content and kind again skips it, and a signed journal lets `recover` finish an interrupted change.
 - Memory Explorer, a read-only local viewer on `127.0.0.1` with a per-launch capability token, a BM25 recall preview, and a fictitious demo store.
 - An agent playbook that lets Claude run these commands from plain requests: `claude --append-system-prompt-file docs/agent-playbook.md`.
 - A standard-library smoke test and CI on Linux and macOS for Python 3.9 through 3.13.
