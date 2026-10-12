@@ -26,7 +26,7 @@ It proves the store hasn't changed behind your back. Each fact is signed when yo
 
 ## Does it work with other coding agents?
 
-The commands and the store work anywhere Python runs. The automatic capture and recall hooks are written for Claude Code's hook system, so that's the only agent they plug into today.
+Yes, for recall. The MCP server lets Codex CLI, Gemini CLI, Cursor and Claude Desktop look things up in your store, with the same verification and budget as the Claude Code hook. [MCP server](mcp.md) has the setup for each. Automatic capture is written for Claude Code's hook system, so with other agents you add facts through a notes file and `propose`.
 
 ## Does it run on Windows?
 

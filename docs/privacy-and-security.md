@@ -9,7 +9,7 @@ I don't want my notes leaving my machine, so NockBrain doesn't send them anywher
 
 ## What leaves your machine
 
-Nothing from NockBrain. There are no network calls, no model calls, no telemetry and no downloads anywhere in `bin/`. The only server it starts is Memory Explorer, and that listens on 127.0.0.1.
+Nothing from NockBrain. There are no network calls, no model calls, no telemetry and no downloads anywhere in `bin/`. The only network listener it starts is Memory Explorer, on 127.0.0.1. The MCP server talks to your agent over standard input and output and opens no port.
 
 Claude Code still talks to Claude the way it always does. When the recall hook adds facts to a prompt, those facts travel with that conversation. Keep that in mind before you apply anything you wouldn't put in a prompt yourself.
 

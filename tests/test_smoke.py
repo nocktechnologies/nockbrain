@@ -24,6 +24,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 CLI = REPO / "bin" / "consumer-brain.py"
 EXPLORER = REPO / "bin" / "explore-memory.py"
+MCP = REPO / "bin" / "nockbrain-mcp.py"
 NOTES = REPO / "examples" / "notes.md"
 DIGEST = re.compile(r"[0-9a-f]{64}\Z")
 
@@ -129,6 +130,45 @@ class SmokeTest(unittest.TestCase):
                               env=dict(os.environ, PYTHONDONTWRITEBYTECODE="1"))
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertIn("usage", done.stdout)
+
+    @unittest.skipUnless(MCP.exists(), "bin/nockbrain-mcp.py ships from 0.2.0")
+    def test_mcp_recall_and_status(self):
+        with tempfile.TemporaryDirectory(prefix="nockbrain-mcp-") as name:
+            tmp = Path(name).resolve()
+            home = tmp / "home"
+            home.mkdir()
+            env = {"HOME": str(home), "PATH": os.environ.get("PATH", "/usr/bin:/bin"),
+                   "PYTHONDONTWRITEBYTECODE": "1"}
+            store = tmp / "store"
+            cli = [sys.executable, "-B", str(CLI)]
+            _run_json(cli + ["init", "--store", str(store)], tmp, env)
+            digest = _run_json(cli + ["propose", "--store", str(store), "--format", "markdown",
+                                      "--source", str(NOTES)], tmp, env)["proposal"]
+            _run_json(cli + ["apply", "--store", str(store), "--proposal", digest], tmp, env)
+
+            requests = [
+                {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {
+                    "protocolVersion": "2025-11-25", "capabilities": {},
+                    "clientInfo": {"name": "smoke", "version": "1"}}},
+                {"jsonrpc": "2.0", "id": 2, "method": "tools/list"},
+                {"jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": {
+                    "name": "recall", "arguments": {"query": "inventory report"}}},
+                {"jsonrpc": "2.0", "id": 4, "method": "tools/call", "params": {
+                    "name": "status", "arguments": {}}},
+            ]
+            done = subprocess.run([sys.executable, "-B", str(MCP), "--store", str(store)],
+                                  cwd=str(tmp), env=env, capture_output=True, text=True, timeout=120,
+                                  input="".join(json.dumps(r) + "\n" for r in requests))
+            replies = {m["id"]: m for m in map(json.loads, done.stdout.splitlines())}
+            self.assertEqual(sorted(replies), [1, 2, 3, 4], done.stderr)
+            tools = sorted(t["name"] for t in replies[2]["result"]["tools"])
+            self.assertEqual(tools, ["recall", "status"])
+            recalled = replies[3]["result"]["content"][0]["text"]
+            self.assertIn("untrusted historical context", recalled)
+            self.assertIn("inventory report", recalled)
+            self.assertFalse(replies[3]["result"].get("isError"))
+            self.assertIn('"facts": 3', replies[4]["result"]["content"][0]["text"].replace("'", '"'))
+            self.assertEqual(sorted(p.name for p in home.iterdir()), [])
 
 
 if __name__ == "__main__":

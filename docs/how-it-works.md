@@ -49,6 +49,8 @@ If you are, the hook copies the store's public files to a private temporary fold
 
 The hook has five seconds. If it runs out of time, finds no match or hits any verification failure, Claude carries on with nothing added.
 
+The MCP server's `recall` tool runs this same path, from verification to the 800-token budget, for any MCP client. It skips the classifier, because an agent calling the tool already is the request. [MCP server](mcp.md) covers it.
+
 Recall matches words, and that's the main limit of this release. Semantic search and graph expansion exist in the code and are switched off here, so a fact you phrase differently from your question won't come back. Writing notes with the words you'll use later helps.
 
 Code: `bin/recall-classifier.py` (`PAST_PATTERNS`, `classify()`), `bin/_consumer_hooks.py` (verify then recall, `budget=800`, `semantic=False`), `bin/budget-recall.py` (BM25, confidence floor, date cap, excerpts, budget), `bin/consumer-hook.py` (time limits and the reference label).

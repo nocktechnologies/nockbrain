@@ -4,6 +4,13 @@ Notable changes to NockBrain are recorded in this file. The format follows [Keep
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-12
+
+### Added
+
+- A read-only MCP server, `bin/nockbrain-mcp.py`, so Codex CLI, Gemini CLI, Cursor, Claude Desktop and Claude Code can recall from a store. It has two tools: `recall` runs the same verified recall as the Claude Code hook (store verification on a private snapshot, BM25, 800-token budget, untrusted-reference label), and `status` returns counts only. There are no write tools. It speaks MCP over stdio with standard library code only, supports the 2026-07-28 revision and the earlier `initialize` handshake, fails closed on any verification problem, and stops each call after 5 seconds.
+- [docs/mcp.md](docs/mcp.md) with setup for each client.
+
 ## [0.1.0] - 2026-10-12
 
 First public release.
@@ -19,5 +26,6 @@ First public release.
 - An agent playbook that lets Claude run these commands from plain requests: `claude --append-system-prompt-file docs/agent-playbook.md`.
 - A standard-library smoke test and CI on Linux and macOS for Python 3.9 through 3.13.
 
-[Unreleased]: https://github.com/nocktechnologies/nockbrain/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/nocktechnologies/nockbrain/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/nocktechnologies/nockbrain/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/nocktechnologies/nockbrain/releases/tag/v0.1.0

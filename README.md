@@ -13,7 +13,7 @@ The one-minute explainer, its captions and the script behind it are in [media/](
 
 ## Who it's for
 
-NockBrain fits one person who works with Claude Code across many sessions and is tired of explaining the same decisions, rules and corrections again. It runs on macOS and Linux, and the stock macOS `python3` is enough. If you want a memory that fills itself with no review step, this is the wrong tool.
+NockBrain fits one person who works with Claude Code across many sessions and is tired of explaining the same decisions, rules and corrections again. It runs on macOS and Linux, and the stock macOS `python3` is enough. Claude Code gets automatic capture and recall; Codex CLI, Gemini CLI, Cursor and Claude Desktop can recall through the MCP server. If you want a memory that fills itself with no review step, this is the wrong tool.
 
 ## How it works
 
@@ -68,13 +68,23 @@ claude --append-system-prompt-file "$PWD/docs/agent-playbook.md" \
 
 The playbook teaches Claude the same commands, so you can say "remember this exact decision" and later correct or forget it in plain language. It guides the agent. Claude Code's normal permission prompts still apply.
 
+## Use it with other agents
+
+NockBrain ships a read-only MCP server, so any MCP client can recall from your store. For Codex CLI:
+
+```sh
+codex mcp add nockbrain -- python3 "$PWD/bin/nockbrain-mcp.py" --store "$STORE"
+```
+
+The server has two tools, `recall` and `status`, and nothing that writes. Recall runs the same verified path as the Claude Code hook and returns the same 800-token budget, labeled as untrusted reference. Capture is still Claude Code only, so facts from other agents come in through a notes file and `propose`. [docs/mcp.md](docs/mcp.md) has the setup for Claude Code, Codex CLI, Gemini CLI, Cursor and Claude Desktop.
+
 ## Privacy
 
 NockBrain makes no network calls, no model calls and sends no telemetry. It reads only the files you name and, if you turn the hook on, only the transcript Claude Code hands it from a folder you allowed. Your store is a folder only your user can open. Claude Code's own conversation with Claude still leaves your machine as it always does, and it carries any facts the hook adds. [docs/privacy-and-security.md](docs/privacy-and-security.md) covers what's refused, how the store is signed and how to back it up.
 
 ## Limits
 
-Recall matches words. A fact phrased differently from your question won't come back, because this release has no semantic search. It's a first release for one person and one store, with no installer and no Windows support. Forgetting removes the exact record you pick; paraphrases in other records, your original notes and your backups stay yours to clean up.
+Recall matches words. A fact phrased differently from your question won't come back, because this release has no semantic search. It's built for one person and one store, with no installer and no Windows support. Automatic capture works with Claude Code only. Forgetting removes the exact record you pick; paraphrases in other records, your original notes and your backups stay yours to clean up.
 
 ## Documentation
 
@@ -85,6 +95,7 @@ Recall matches words. A fact phrased differently from your question won't come b
 | [Privacy and security](docs/privacy-and-security.md) | What it reads, what it refuses, what it stores, how the store protects itself |
 | [Commands](docs/commands.md) | Every command, flag and limit |
 | [Agent playbook](docs/agent-playbook.md) | The guide you load into Claude so it runs NockBrain for you |
+| [MCP server](docs/mcp.md) | Recall from Codex CLI, Gemini CLI, Cursor, Claude Desktop and Claude Code |
 | [Memory Explorer](docs/memory-explorer.md) | The read-only browser view and its recall preview |
 | [FAQ](docs/faq.md) | Short answers to the questions people ask first |
 
