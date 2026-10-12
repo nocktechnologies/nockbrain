@@ -1,0 +1,44 @@
+%% How NockBrain works: capture, review, signed store, recall.
+%% Dashed (opt-in) parts run only in Claude Code sessions launched with the
+%% settings file that `setup-hooks` writes. Everything else is a command you run.
+flowchart LR
+    claude["<b>Claude Code session</b><br/>your normal setup"]
+
+    subgraph capture["Capture and review: nothing is in memory yet"]
+        direction TB
+        files["<b>Files you choose</b><br/>propose --source FILE<br/>Markdown notes or .jsonl transcripts"]
+        hook["<b>Session hook, at Stop</b> (opt-in)<br/>reads only this session's transcript,<br/>and only inside a folder you allowed"]
+        queue[("<b>Review queue</b><br/>pending proposals<br/>secrets redacted")]
+        review["<b>You review</b><br/>every candidate, its kind<br/>and the line it came from"]
+        dropped(["Dropped"])
+    end
+
+    store[("<b>Signed local store</b><br/>each accepted fact is signed,<br/>never rewritten")]
+    explorer["<b>Memory Explorer</b><br/>read-only browser view"]
+
+    subgraph recall["Recall (opt-in)"]
+        direction TB
+        past{"Asks about<br/>the past?"}
+        verify["<b>Verify the store</b><br/>every signature and revocation;<br/>any failure adds nothing"]
+        rank["<b>Rank by shared words</b><br/>BM25 × confidence × age,<br/>current facts only"]
+        budget["<b>Fit the budget</b><br/>up to 800 tokens,<br/>at most 4 per date first"]
+        nothing(["Nothing added"])
+    end
+
+    claude -. "after each reply" .-> hook
+    files --> queue
+    hook -.-> queue
+    queue --> review
+    review -- "apply" --> store
+    review -- "discard" --> dropped
+    store --> explorer
+
+    claude -. "your prompt" .-> past
+    past -- "no" --> nothing
+    past -- "yes" --> verify
+    store -- "facts, revocations,<br/>public key" --> verify
+    verify --> rank --> budget
+    budget -. "reference context,<br/>labeled untrusted" .-> claude
+
+    classDef optin stroke:#bf8700,stroke-width:2px,stroke-dasharray:6 4
+    class hook,past,verify,rank,budget optin

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Memory Explorer · Nock Brain</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to memories</a>
+  <div class="workspace">
+    <header class="masthead">
+      <div class="brand-line"><span class="brand-mark" aria-hidden="true">N</span><span>Nock Brain</span><span class="brand-divider" aria-hidden="true"></span><span>Memory Explorer</span></div>
+      <div class="heading-line">
+        <div><p class="eyebrow">Local memory, in view</p><h1>What the brain remembers<span class="title-period">.</span></h1></div>
+        <button id="refresh" class="quiet-button" type="button">Refresh snapshot</button>
+      </div>
+      <div class="snapshot-strip" aria-label="Selected snapshot">
+        <div><span class="strip-label">Source</span><strong id="store-label">Connecting…</strong></div>
+        <div><span class="strip-label">State</span><strong id="store-state">Loading</strong></div>
+        <div><span class="strip-label">Captured</span><strong id="capture-time">-</strong></div>
+        <div><span class="strip-label">Verification</span><strong id="verification-state">-</strong></div>
+      </div>
+    </header>
+
+    <main id="main">
+      <div id="notice-region" class="notice-region" aria-live="polite"></div>
+      <p id="status" class="status-line" role="status" aria-live="polite">Connecting to the local explorer…</p>
+
+      <div class="tabs" role="tablist" aria-label="Explorer views">
+        <button id="memories-tab" class="tab active" role="tab" aria-selected="true" aria-controls="memories-panel" type="button">Memories</button>
+        <button id="preview-tab" class="tab" role="tab" aria-selected="false" aria-controls="preview-panel" tabindex="-1" type="button">Recall preview</button>
+      </div>
+
+      <section id="memories-panel" role="tabpanel" aria-labelledby="memories-tab">
+        <div class="section-intro"><div><p class="eyebrow">Snapshot contents</p><h2>Browse memory</h2></div><p id="record-count" class="section-aside">-</p></div>
+        <form id="filters" class="filters" role="search">
+          <div class="field search-field"><label for="search">Search content or ID</label><input id="search" name="query" type="search" placeholder="Search this snapshot" autocomplete="off"></div>
+          <div class="field"><label for="kind">Kind</label><select id="kind" name="kind"><option value="">All kinds</option></select></div>
+          <div class="field"><label for="lifecycle">Lifecycle</label><select id="lifecycle" name="lifecycle"><option value="current">Current</option><option value="all">All states</option><option value="superseded">Superseded</option><option value="inactive">Inactive</option><option value="revoked">Revoked</option><option value="invalid">Invalid</option></select></div>
+          <div class="field"><label for="collection">Collection</label><select id="collection" name="collection"><option value="">Facts &amp; insights</option><option value="facts">Facts</option><option value="insights">Insights</option></select></div>
+          <button class="filter-button" type="submit">Apply</button>
+        </form>
+        <div class="browse-grid">
+          <section class="list-column" aria-labelledby="list-heading">
+            <div class="column-heading"><h3 id="list-heading">Records</h3><span id="page-label">-</span></div>
+            <div id="record-list" class="record-list"><p class="empty-state">Loading memories…</p></div>
+            <nav class="pagination" aria-label="Memory pages"><button id="previous-page" class="quiet-button" type="button" disabled>Previous</button><span id="page-position">-</span><button id="next-page" class="quiet-button" type="button" disabled>Next</button></nav>
+          </section>
+          <section class="detail-column" aria-labelledby="detail-heading"><div class="column-heading"><h3 id="detail-heading">Detail</h3><span>Selected record</span></div><div id="record-detail" class="record-detail"><p class="empty-state">Select a memory to read its full content, source references, and verification state.</p></div></section>
+        </div>
+      </section>
+
+      <section id="preview-panel" role="tabpanel" aria-labelledby="preview-tab" hidden>
+        <div class="section-intro"><div><p class="eyebrow">Production selection, local snapshot</p><h2>BM25 preview</h2></div></div>
+        <p class="preview-description">See which memories this snapshot would select for a prompt. Semantic and graph tiers are off. This is a preview, not injection history.</p>
+        <form id="preview-form" class="preview-form">
+          <div class="field"><label for="prompt">Prompt</label><textarea id="prompt" name="query" rows="3" maxlength="2000" placeholder="What did we decide about Friday delivery?"></textarea><p class="field-help">Example: "What did we decide about Friday delivery?"</p></div>
+          <div class="preview-actions"><div class="field budget-field"><label for="budget">Token budget</label><input id="budget" name="budget" type="number" value="800" min="1" max="1500" step="1"></div><button class="primary-button" type="submit">Preview recall</button></div>
+        </form>
+        <div id="preview-result" class="preview-result" aria-live="polite"><p class="empty-state">Enter a prompt to see selected memories and the text a recall selection would render.</p></div>
+      </section>
+    </main>
+    <footer><span>Local read-only workspace</span><span>Source references are shown as text.</span></footer>
+  </div>
+</body>
+</html>

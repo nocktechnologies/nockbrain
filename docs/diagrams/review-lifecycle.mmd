@@ -1,0 +1,35 @@
+%% The life of a memory. Nothing becomes a fact until you apply a reviewed
+%% proposal. Any pending or stale proposal can be discarded. Applying a forget
+%% also clears every saved proposal. An applied proposal stays listed, marked
+%% stale, until you discard it.
+stateDiagram-v2
+    direction LR
+    Pending: Pending proposal
+    Stale: Stale proposal
+    Current: Current fact
+    Change: Change proposal (correct or forget)
+    Superseded: Superseded (kept as history)
+    Forgotten: Forgotten
+    Recovery: Recovery required
+
+    [*] --> Pending: propose (files you choose)
+    [*] --> Pending: session hook at Stop (opt-in)
+    Pending --> Pending: review (read only)
+    Pending --> Current: apply (each new fact signed)
+    Pending --> Stale: another change applied first
+    Stale --> Pending: propose again
+    Pending --> [*]: discard
+    Stale --> [*]: discard
+    Current --> Change: correct or forget
+    Superseded --> Change: forget
+    Change --> Superseded: apply correction
+    Change --> Current: replacement becomes current
+    Change --> Forgotten: apply forget (clears all proposals)
+    Change --> Recovery: apply interrupted
+    Recovery --> Superseded: recover
+    Recovery --> Forgotten: recover
+
+    note right of Forgotten
+        Record removed. A signed, ID-only
+        revocation blocks exact re-import.
+    end note

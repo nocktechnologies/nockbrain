@@ -1,0 +1,46 @@
+%% What stays on your machine. NockBrain makes no network calls, no model
+%% calls and sends no telemetry. The only traffic that leaves the machine is
+%% Claude Code's own conversation with Claude, which includes any facts the
+%% opt-in hook adds as reference context.
+flowchart LR
+    subgraph machine["Your machine"]
+        direction TB
+        subgraph reads["Reads only what you choose"]
+            direction LR
+            files["<b>Files you name</b><br/>propose reads only the<br/>exact paths you pass"]
+            refused["<b>Always refused</b><br/>SSH and GPG folders, .env files,<br/>private keys, paths containing<br/>secret or token, credentials files"]
+            folder["<b>Allowed folder</b> (opt-in)<br/>the hook reads only the transcript<br/>Claude Code names, if it is inside"]
+        end
+        subgraph runs["Runs locally"]
+            direction LR
+            cli["<b>NockBrain commands</b><br/>init · propose · review · apply<br/>discard · correct · forget · recover"]
+            explorer["<b>Memory Explorer</b><br/>read-only page at 127.0.0.1,<br/>per-launch link token"]
+            hook["<b>Session hook</b> (opt-in)<br/>time-limited,<br/>never blocks Claude"]
+        end
+        subgraph keeps["Keeps everything here"]
+            direction LR
+            store[("<b>Your store folder</b> (owner-only)<br/>facts.json · revocations.jsonl<br/>proposals/ · customer.json<br/>signing-key · signing-key.pub<br/>claude-settings.json · .gitignore")]
+            temp["<b>Temporary copies</b><br/>hook and Explorer work on<br/>private copies in /tmp,<br/>deleted when done"]
+        end
+        claudecode["<b>Claude Code</b><br/>your normal setup"]
+    end
+
+    subgraph outside["Outside your machine"]
+        anthropic["<b>Claude</b><br/>your conversation, as usual,<br/>including facts the hook adds"]
+        none["<b>From NockBrain: nothing</b><br/>no network calls · no model calls<br/>no telemetry · no downloads"]
+    end
+
+    files -- "propose" --> cli
+    folder -. "at Stop" .-> hook
+    cli -- "writes, under a lock" --> store
+    hook -. "pending proposals" .-> store
+    store -. "public files for recall" .-> hook
+    store -- "public files only" --> explorer
+    claudecode -. "prompt, end of each reply" .-> hook
+    hook -. "reference context" .-> claudecode
+    claudecode -. "normal Claude Code traffic" .-> anthropic
+
+    classDef optin stroke:#bf8700,stroke-width:2px,stroke-dasharray:6 4
+    classDef refuse stroke:#cf222e,stroke-width:2px
+    class folder,hook optin
+    class refused refuse

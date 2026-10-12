@@ -1,0 +1,80 @@
+1
+00:00:00,450 --> 00:00:02,691
+Every Claude Code session starts from zero.
+
+2
+00:00:02,991 --> 00:00:06,754
+NockBrain gives it a memory, and
+nothing goes in until you approve it.
+
+3
+00:00:07,454 --> 00:00:08,743
+Make a decision once.
+
+4
+00:00:09,043 --> 00:00:11,123
+Days later, ask what you decided,
+
+5
+00:00:11,163 --> 00:00:13,753
+and Claude answers from
+your own reviewed notes.
+
+6
+00:00:14,453 --> 00:00:18,206
+You choose the notes, or turn on a hook
+that queues what was said in a session.
+
+7
+00:00:18,506 --> 00:00:19,783
+Secrets are redacted.
+
+8
+00:00:20,083 --> 00:00:23,238
+You read every candidate, then
+apply it or throw it away.
+
+9
+00:00:23,538 --> 00:00:27,088
+Applied facts are signed, and what
+you approved is never rewritten.
+
+10
+00:00:27,788 --> 00:00:31,868
+When a prompt asks about the past,
+NockBrain checks every signature,
+
+11
+00:00:31,908 --> 00:00:34,268
+ranks your current facts by shared words,
+
+12
+00:00:34,308 --> 00:00:38,005
+and returns up to 800
+tokens, labeled as reference.
+
+13
+00:00:38,705 --> 00:00:39,973
+It runs on your machine.
+
+14
+00:00:40,273 --> 00:00:43,277
+No network calls, no
+model calls, no telemetry.
+
+15
+00:00:43,977 --> 00:00:46,617
+The limit today: recall needs shared words,
+
+16
+00:00:46,657 --> 00:00:49,059
+so a fact you phrase
+differently won't come back.
+
+17
+00:00:49,759 --> 00:00:52,341
+NockBrain is free and MIT licensed.
+
+18
+00:00:52,641 --> 00:00:54,670
+Clone it and try it on your next session.

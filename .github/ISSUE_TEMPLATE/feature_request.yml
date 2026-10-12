@@ -1,0 +1,37 @@
+name: Feature request
+description: Suggest a change or an addition to NockBrain.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the problem first, then the change you'd like. Large changes should start here before anyone writes code.
+
+        Use fictitious examples only. Never paste real memories, transcripts or keys.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What are you trying to do, and what gets in the way today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: What should NockBrain do instead? Commands, flags or output you have in mind help.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you've tried
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything else
+      description: Constraints such as the Python 3.9 floor, the standard-library-only rule, or the review-first model that this change has to respect.
+    validations:
+      required: false

@@ -1,0 +1,49 @@
+%% How the store protects itself: one key per store, facts signed once,
+%% changes recorded as signed and chained revocations, and a full re-check on
+%% every open and every recall.
+flowchart TB
+    subgraph keys["1 · One key per store, made by init"]
+        crypto{"cryptography<br/>package installed?"}
+        ed["<b>Ed25519 key pair</b><br/>signing-key (private)<br/>signing-key.pub (public)"]
+        hmac["<b>HMAC-SHA256 secret</b><br/>the same secret is in both files:<br/>keep both private"]
+        crypto -- "yes" --> ed
+        crypto -- "no" --> hmac
+    end
+
+    subgraph accept["2 · Accepting facts with apply"]
+        prop["<b>Proposal</b>, named by its SHA-256 digest,<br/>bound to the store ID, key ID and<br/>the store's current generation"]
+        same{"Store unchanged<br/>since the proposal?"}
+        stale(["Refused: stale proposal"])
+        id["<b>Fact ID</b> = SHA-256 of store ID, kind and text<br/>already stored or forgotten: skipped"]
+        sign["<b>Signature</b> over the hash of ID, kind and text<br/>plus the hash of its evidence"]
+        facts[("<b>facts.json</b><br/>signed content is never rewritten")]
+        prop --> same
+        same -- "no" --> stale
+        same -- "yes" --> id --> sign --> facts
+    end
+
+    subgraph change["3 · Correcting or forgetting"]
+        cp["<b>Signed change proposal</b><br/>correct or forget, reviewed like any other"]
+        journal["<b>Signed journal</b> written first"]
+        rev["<b>Signed revocation appended</b><br/>numbered; each line carries<br/>the hash of the line before"]
+        rewrite["<b>facts.json rewritten</b><br/>correct: old record marked superseded,<br/>signed replacement added<br/>forget: record removed, saved proposals cleared"]
+        done(["Journal removed"])
+        recovery["<b>Recovery required</b><br/>changes and recall are refused"]
+        cp -- "apply" --> journal --> rev --> rewrite --> done
+        journal -. "interrupted" .-> recovery
+        recovery -- "recover: checks the journal's signature,<br/>finishes the same change" --> rev
+    end
+
+    subgraph check["4 · Every open and every recall"]
+        v1["Every fact signature"]
+        v2["Revocation chain:<br/>no gaps, no edited lines"]
+        v3["History: nothing revoked is current,<br/>nothing forgotten has come back"]
+        fail(["Any failure: commands refuse,<br/>recall adds nothing"])
+        v1 --> v2 --> v3
+        v3 -. "failure" .-> fail
+    end
+
+    ed --> sign
+    hmac --> sign
+    facts --> v1
+    rev --> v2

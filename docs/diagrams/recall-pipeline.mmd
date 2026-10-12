@@ -1,0 +1,18 @@
+%% What the opt-in hook does with each prompt. Keyword ranking (BM25) only:
+%% semantic search and graph expansion are switched off in this release.
+flowchart LR
+    prompt["<b>Your prompt</b><br/>Claude Code runs the hook;<br/>5-second limit, never blocks"]
+    past{"Asks about<br/>the past?"}
+    verify["<b>Verify the store</b><br/>on a private temporary copy:<br/>signatures, revocation chain, history"]
+    eligible["<b>Keep current facts</b><br/>not superseded or revoked,<br/>confidence 0.7 or more"]
+    rank["<b>Rank by shared words</b><br/>BM25 × confidence × age,<br/>boosted for more and closer matches"]
+    spread["<b>Spread across dates</b><br/>at most 4 per date first"]
+    budget["<b>Fit 800 tokens</b><br/>each fact trimmed to<br/>320 characters around the match"]
+    back["<b>Back to Claude</b><br/>labeled as untrusted<br/>reference context"]
+    nothing(["Nothing added;<br/>Claude carries on"])
+
+    prompt --> past
+    past -- "yes" --> verify --> eligible --> rank --> spread --> budget --> back
+    past -- "no" --> nothing
+    verify -- "any failure" --> nothing
+    rank -- "no match" --> nothing

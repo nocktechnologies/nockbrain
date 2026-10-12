@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.DS_Store
+
+# Never commit a NockBrain store. Keep your store outside this repository;
+# these patterns stop store files from being added if one lands here by mistake.
+facts.json
+revocations.jsonl
+signing-key
+signing-key.pub
+proposals/
+claude-settings.json
+customer.json
+.customer.lock
+.customer-journal.json
