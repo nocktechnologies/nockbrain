@@ -30,6 +30,8 @@ stdio and offers read-only `recall` and `status` tools.
 
 ## Rules and gotchas
 
+- This is a public repository; keep agent guidance and handoff notes
+  product-only, with no private coordination or review instructions.
 - Keep the standard library as the only required dependency. `cryptography` is
   optional: new stores use Ed25519 when it is installed and HMAC-SHA256 when it
   is absent. An HMAC store's public-key file contains secret material too.
